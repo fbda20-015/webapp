@@ -25,14 +25,14 @@ sporting_events = df['Sport Viewed'].unique()
 
 # Title and description
 st.title("FunOlympic Games Analysis Dashboard")
-st.markdown("This dashboard allows you to analyze various aspects of the FunOlympic Games.")
+st.markdown("*This dashboard allows you to analyze various aspects of the FunOlympic Games.*")
 
 # Sidebar
 analysis_option = st.sidebar.radio("Select Analysis", ["Home", "Viewship by Location", "Engagement Trends", "Gender Analysis", "Preferences Analysis", "Viewer Engagement", "Concurrent Events"])
 
 # Handle different analysis options
 if analysis_option == "Home":
-    st.title("Welcome to FunOlympic Games Analysis Dashboard")
+    st.markdown("**Welcome to FunOlympic Games Analysis Dashboard**")
     st.markdown("""
     This dashboard provides insights into the FunOlympic Games, including viewer engagement trends, preferences, and geographical distribution of viewership. 
     Use the sidebar to navigate through different analysis options.
