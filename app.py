@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 # Load data
-df = pd.read_csv("dataset/processed.csv")
+df = pd.read_csv("processed.csv")
 
 # Convert 'Date' column to datetime format
 df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')  
