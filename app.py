@@ -1,10 +1,9 @@
-import dash
-from dash import html, dcc, Input, Output
+import streamlit as st
 import pandas as pd
 import plotly.express as px
 
 # Load data
-df = pd.read_csv("processed.csv")
+df = pd.read_csv('processed.csv')
 
 # Convert 'Date' column to datetime format
 df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')  
@@ -24,264 +23,18 @@ genders = df['Gender'].unique()
 # Define sporting events
 sporting_events = df['Sport Viewed'].unique()
 
-# Create Dash app
-app = dash.Dash(__name__, suppress_callback_exceptions=True)
+# Title and description
+st.title("FunOlympic Games Analysis Dashboard")
+st.markdown("This dashboard allows you to analyze various aspects of the FunOlympic Games.")
 
-# Define CSS styles for buttons
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-        <style>
-            .custom-button {
-                background-color: #4CAF50; 
-                border: none;
-                color: white;
-                padding: 10px 24px;
-                text-align: center;
-                text-decoration: none;
-                font-size: 16px;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-                border-radius: 8px;
-                flex: 1; /* Ensure equal width for buttons */
-                max-width: 200px; /* Limit maximum width */
-            }
+# Sidebar
+analysis_option = st.sidebar.radio("Select Analysis", ["Viewship by Location", "Engagement Trends", "Gender Analysis", "Preferences Analysis", "Viewer Engagement", "Concurrent Events"])
 
-            .custom-button:hover {
-                background-color: white;
-                color: black;
-                border: 2px solid #4CAF50;
-            }
-        </style>
-    </head>
-    <body>
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}
-        </footer>
-    </body>
-</html>
-'''
-
-# Define layout for gender analysis page
-gender_layout = html.Div([
-    html.H2("Gender-specific Preferences and Behaviours", style={'textAlign': 'center'}),
+# Handle different analysis options
+if analysis_option == "Viewship by Location":
+    st.header("Distribution of Viewship of Each Sporting Event by Geographic Location")
+    sport_viewed = st.selectbox("Select Sport Viewed", sporting_events)
     
-    # Continent selection dropdown
-    html.Div([
-        html.Label("Select Continent"),
-        dcc.Dropdown(
-            id='continent-dropdown',
-            options=[{'label': continent, 'value': continent} for continent in continents],
-            value=continents[0],
-            style={'margin-right': '50px', 'font-size': '16px', 'padding': '2px 30px'}  # Added margin-right and increased font size
-        ),
-    ], style={'display': 'inline-block'}),  # Ensure inline display
-    
-    # Gender selection dropdown
-    html.Div([
-        html.Label("Select Gender"),
-        dcc.Dropdown(
-            id='gender-dropdown',
-            options=[{'label': gender, 'value': gender} for gender in genders],
-            value=genders[0],
-            style={'margin-right': '30px', 'font-size': '16px', 'padding': '2px 15px'}  # Added margin-right and increased font size
-        ),
-    ], style={'display': 'inline-block'}),  # Ensure inline display
-    
-    # Sporting event selection dropdown
-    html.Div([
-        html.Label("Select Sporting Event"),
-        dcc.Dropdown(
-            id='sport-dropdown',
-            options=[{'label': sport, 'value': sport} for sport in sporting_events],
-            value=sporting_events[0],
-            style={'margin-right': '40px', 'font-size': '16px', 'padding': '2px 15px'}  # Increased font size
-        ),
-    ], style={'display': 'inline-block'}),  # Ensure inline display
-    
-    # Gender analysis pie chart
-    dcc.Graph(id='gender-analysis-pie')
-])
-
-# Define layout for preferences analysis page
-preferences_layout = html.Div([
-    html.H2("Viewer Preferences for Different Sports Events per country per continent", style={'textAlign': 'center'}),
-    
-    # Continent selection dropdown
-    html.Div([
-        html.Label("Select Continent", style={'marginRight': '10px'}),
-        dcc.Dropdown(
-            id='continent-dropdown',
-            options=[{'label': continent, 'value': continent} for continent in continents],
-            value=continents[0],  
-            style={'margin-right': '50px', 'font-size': '16px', 'padding': '2px 30px'}
-        ),
-    ], style={'display': 'inline-block'}),
-
-    # Country selection dropdown
-    html.Div([
-        html.Label("Select Country", style={'marginRight': '10px'}),
-        dcc.Dropdown(
-            id='country-dropdown',
-            options=[],
-            value='' ,
-            style={'margin-right': '90px', 'font-size': '16px', 'padding': '2px 30px'}
-        ),
-    ], style={'display': 'inline-block'}),
-
-    # Preferences analysis plot
-    dcc.Graph(id='preferences-plot')
-])
-
-# Define layout for concurrent events page
-layout_concurrent = html.Div([
-    html.H2("Distribution of Concurrent Sporting Events by Viewer Engagement", style={'textAlign': 'center'}),
-
-    # Dropdown for selecting month
-    html.Div([
-        html.Label("Select Month", style={'marginRight': '10px'}),
-        dcc.Dropdown(
-            id='month-dropdown-concurrent',
-            options=[{'label': month, 'value': month} for month in months],
-            value=months[0],
-            clearable=False
-        ),
-    ]),
-
-    # Heatmap plot for concurrent events
-    dcc.Graph(id='concurrent-events-plot')
-])
-
-app.layout = html.Div([
-        html.H1("FunOlympic Games Analysis Dashboard", style={'textAlign': 'center', 'marginBottom': '30px', 'fontFamily': 'Arial, sans-serif', 'color': '#333333'}),
-
-    # Buttons for each analysis
-    html.Div([
-        html.Button('Viewship by Location', id='btn-geo', n_clicks=0, className='custom-button'),
-        html.Button('Engagement Trends', id='btn-engagement', n_clicks=0, className='custom-button'),
-        html.Button('Gender Analysis', id='btn-gender', n_clicks=0, className='custom-button'),
-        html.Button('Preferences Analysis', id='btn-preferences', n_clicks=0, className='custom-button'),
-        html.Button('Viewer Engagement', id='btn-navigation', n_clicks=0, className='custom-button'),
-        html.Button('Concurrent Events', id='btn-concurrent', n_clicks=0, className='custom-button')
-    ], className='btn-container', style={'textAlign': 'center', 'marginBottom': '30px'}),
-
-    # Placeholder for selected analysis
-    html.Div(id='analysis-output'),
-
-     # Image
-    html.Div([
-        html.Img(src='/static/image/sport.jpg', style={'width': '35%', 'display': 'block', 'margin': 'auto'})
-    ], style={'marginBottom': '30px'}),
-    
-])
-
-# Define callback to update analysis output
-@app.callback(
-    Output('analysis-output', 'children'),
-    [Input('btn-geo', 'n_clicks'),
-     Input('btn-engagement', 'n_clicks'),
-     Input('btn-gender', 'n_clicks'),
-     Input('btn-preferences', 'n_clicks'),
-     Input('btn-navigation', 'n_clicks'),
-     Input('btn-concurrent', 'n_clicks')]
-)
-def update_analysis(btn_geo, btn_engagement, btn_gender, btn_preferences, btn_navigation, btn_concurrent):
-    # Determine which button was clicked
-    clicked_button = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    
-    if clicked_button == 'btn-geo':
-        # Return analysis based on clicked button
-        layout_geo = html.Div([
-            html.H2("Distribution of Viewship of Each Sporting Event by Geographic Location", style={'textAlign': 'center'}),
-            
-            # Dropdown for selecting sport viewed
-            dcc.Dropdown(
-                id='sport-viewed-dropdown',
-                options=[{'label': sport, 'value': sport} for sport in df['Sport Viewed'].unique()],
-                value=df['Sport Viewed'].unique()[0],
-                clearable=False
-            ),
-            
-            # Geographic plot for viewship distribution
-            dcc.Graph(id='geographic-plot')
-        ])
-        return layout_geo
-    elif clicked_button == 'btn-engagement':
-        # Code to generate viewer engagement trends plot over time
-        engagement_data = df.groupby(['Date']).size().reset_index(name='Viewership')
-        fig = px.line(engagement_data, x='Date', y='Viewership')
-        return html.Div([
-            html.H2("Viewer Engagement Trends Over Time", style={'textAlign': 'center'}),
-            # Dropdown for selecting month
-            html.Div([
-                html.Label("Select Month"),
-                dcc.Dropdown(
-                    id='month-dropdown',
-                    options=[{'label': month, 'value': month} for month in df['Month'].unique()],
-                    value=df['Month'].unique()[0], 
-                    style={'margin-right': '30px', 'font-size': '16px', 'padding': '2px 30px'} # Added margin-right and increased font size
-                ),
-            ], style={'display': 'inline-block'}),  # Ensure inline display
-            
-            # Dropdown for selecting sporting event
-            html.Div([
-                html.Label("Select Sporting Event"),
-                dcc.Dropdown(
-                    id='sport-dropdown-engagement',
-                    options=[{'label': sport, 'value': sport} for sport in df['Sport Viewed'].unique()],
-                    value=df['Sport Viewed'].unique()[0], 
-                    clearable=True,
-                    placeholder="Select a Sporting Event",
-                    style={'margin-right': '30px', 'font-size': '16px', 'padding': '2px 30px'} # Increased font size
-                ),
-            ], style={'display': 'inline-block'}),  # Ensure inline display
-
-            dcc.Graph(id='engagement-plot', figure=fig)
-        ])
-    elif clicked_button == 'btn-gender':
-        # Return gender analysis layout
-        return gender_layout
-    elif clicked_button == 'btn-preferences':
-        # Return preferences analysis layout
-        return preferences_layout
-    elif clicked_button == 'btn-navigation':
-        # Navigation patterns analysis
-        navigation_layout = html.Div([
-            html.H2("Viewer Engagement Patterns", style={'textAlign': 'center'}),
-            dcc.Dropdown(
-                id='navigation-dropdown',
-                options=[
-                    {'label': 'Request', 'value': 'Request'},
-                    {'label': 'Rating', 'value': 'Rating'},
-                    {'label': 'Feedback', 'value': 'Feedback'}
-                ],
-                value='Request', 
-                clearable=False
-            ),
-            dcc.Graph(id='navigation-plot')
-        ])
-        return navigation_layout
-    elif clicked_button == 'btn-concurrent':
-        # Return concurrent events layout
-        return layout_concurrent
-    else:
-        return html.Div("Select a requirement to display.", style={'textAlign': 'center','color': 'black', 'fontSize': '20px'})
-
-# Callback to update geographic plot based on selected sport viewed
-@app.callback(
-    Output('geographic-plot', 'figure'),
-    [Input('sport-viewed-dropdown', 'value')]
-)
-def update_geographic_plot(sport_viewed):
     # Filter dataframe based on selected sport viewed
     filtered_df = df[df['Sport Viewed'] == sport_viewed]
     
@@ -301,15 +54,13 @@ def update_geographic_plot(sport_viewed):
                          )
     fig.update_layout(geo=dict(showcoastlines=True))
     fig.update_layout(height=550)  # Adjusting height of the graph
-    return fig
+    st.plotly_chart(fig)
 
-# Callback to update engagement plot based on selected month and sporting event
-@app.callback(
-    Output('engagement-plot', 'figure'),
-    [Input('month-dropdown', 'value'),
-     Input('sport-dropdown-engagement', 'value')]
-)
-def update_engagement_plot(selected_month, selected_sport):
+elif analysis_option == "Engagement Trends":
+    st.header("Viewer Engagement Trends Over Time")
+    selected_month = st.selectbox("Select Month", months)
+    selected_sport = st.selectbox("Select Sporting Event", sporting_events, index=0)
+    
     # Filter dataframe based on selected month and sporting event
     filtered_df = df[(df['Month'] == selected_month) & (df['Sport Viewed'] == selected_sport)]
     
@@ -318,16 +69,14 @@ def update_engagement_plot(selected_month, selected_sport):
     
     # Plot engagement trends
     fig = px.line(engagement_data, x='Date', y='Viewership', title=f'Viewer Engagement Trends for {selected_month} ({selected_sport})')
-    return fig
+    st.plotly_chart(fig)
 
-# Callback to update gender analysis pie chart based on dropdown selection
-@app.callback(
-    Output('gender-analysis-pie', 'figure'),
-    [Input('continent-dropdown', 'value'),
-     Input('gender-dropdown', 'value'),
-     Input('sport-dropdown', 'value')]
-)
-def update_gender_analysis_pie(continent, gender, sport):
+elif analysis_option == "Gender Analysis":
+    st.header("Gender-specific Preferences and Behaviours")
+    continent = st.selectbox("Select Continent", continents)
+    gender = st.selectbox("Select Gender", genders)
+    sport = st.selectbox("Select Sporting Event", sporting_events)
+    
     # Filter dataframe based on selected continent, gender, and sport
     filtered_df = df[(df['Continent'] == continent) & (df['Gender'] == gender) & (df['Sport Viewed'] == sport)]
     
@@ -336,47 +85,36 @@ def update_gender_analysis_pie(continent, gender, sport):
     
     # Create pie chart
     fig = px.pie(names=country_counts.index, values=country_counts.values)
-    return fig
+    st.plotly_chart(fig)
 
-# Callback to update country dropdown based on continent selection
-@app.callback(
-    Output('country-dropdown', 'options'),
-    [Input('continent-dropdown', 'value')]
-)
-def update_country_dropdown(continent):
-    countries = df[df['Continent'] == continent]['Country'].unique()
-    options = [{'label': country, 'value': country} for country in countries]
-    return options
-
-# Callback to update preferences analysis plot based on country selection
-@app.callback(
-    Output('preferences-plot', 'figure'),
-    [Input('country-dropdown', 'value')]
-)
-def update_preferences_plot(country):
+elif analysis_option == "Preferences Analysis":
+    st.header("Viewer Preferences for Different Sports Events per country per continent")
+    continent = st.selectbox("Select Continent", continents)
+    country = st.selectbox("Select Country", df[df['Continent'] == continent]['Country'].unique())
+    
+    # Filter dataframe based on selected country
     filtered_df = df[df['Country'] == country]
+    
+    # Count viewership for each sport viewed
     preferences_data = filtered_df['Sport Viewed'].value_counts().reset_index(name='Viewership')
     fig = px.bar(preferences_data, x='Sport Viewed', y='Viewership')
     fig.update_layout(xaxis_title='Sport Viewed', yaxis_title='Number of Viewership')
-    return fig
+    st.plotly_chart(fig)
 
-# Callback to update navigation analysis plot based on dropdown selection
-@app.callback(
-    Output('navigation-plot', 'figure'),
-    [Input('navigation-dropdown', 'value')]
-)
-def update_navigation_plot(selection):
-    navigation_data = df.groupby(selection).size().reset_index(name='Viewership')
-    fig = px.bar(navigation_data, x=selection, y='Viewership')
-    fig.update_layout(xaxis_title=selection, yaxis_title='Number of Viewership')
-    return fig
+elif analysis_option == "Viewer Engagement":
+    st.header("Viewer Engagement Patterns")
+    navigation_option = st.selectbox("Select Engagement Type", ['Request', 'Rating', 'Feedback'])
+    
+    # Group by selected engagement type and count occurrences
+    navigation_data = df.groupby(navigation_option).size().reset_index(name='Viewership')
+    fig = px.bar(navigation_data, x=navigation_option, y='Viewership')
+    fig.update_layout(xaxis_title=navigation_option, yaxis_title='Number of Viewership')
+    st.plotly_chart(fig)
 
-# Callback to update concurrent events plot based on selected month
-@app.callback(
-    Output('concurrent-events-plot', 'figure'),
-    [Input('month-dropdown-concurrent', 'value')]
-)
-def update_concurrent_events_plot(selected_month):
+elif analysis_option == "Concurrent Events":
+    st.header("Distribution of Concurrent Sporting Events by Viewer Engagement")
+    selected_month = st.selectbox("Select Month", months)
+    
     # Filter dataframe based on selected month
     filtered_df = df[df['Month'] == selected_month]
 
@@ -394,8 +132,4 @@ def update_concurrent_events_plot(selected_month):
         yaxis=dict(title="Sport Viewed"),
         coloraxis=dict(colorscale="Blues")
     )
-
-    return heatmap_fig
-
-if __name__ == '__main__':
-    app.run_server(debug=False)
+    st.plotly_chart(heatmap_fig)
