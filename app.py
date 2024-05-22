@@ -28,10 +28,17 @@ st.title("FunOlympic Games Analysis Dashboard")
 st.markdown("This dashboard allows you to analyze various aspects of the FunOlympic Games.")
 
 # Sidebar
-analysis_option = st.sidebar.radio("Select Analysis", ["Viewship by Location", "Engagement Trends", "Gender Analysis", "Preferences Analysis", "Viewer Engagement", "Concurrent Events"])
+analysis_option = st.sidebar.radio("Select Analysis", ["Home", "Viewship by Location", "Engagement Trends", "Gender Analysis", "Preferences Analysis", "Viewer Engagement", "Concurrent Events"])
 
 # Handle different analysis options
-if analysis_option == "Viewship by Location":
+if analysis_option == "Home":
+    st.header("Welcome to FunOlympic Games Analysis Dashboard")
+    st.markdown("""
+    This dashboard provides insights into the FunOlympic Games, including viewer engagement trends, preferences, and geographical distribution of viewership. 
+    Use the sidebar to navigate through different analysis options.
+    """)
+
+elif analysis_option == "Viewship by Location":
     st.header("Distribution of Viewship of Each Sporting Event by Geographic Location")
     sport_viewed = st.selectbox("Select Sport Viewed", sporting_events)
     
