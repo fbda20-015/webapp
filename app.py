@@ -25,22 +25,21 @@ sporting_events = df['Sport Viewed'].unique()
 
 # Title and description
 st.title("FunOlympic Games Analysis Dashboard")
-st.markdown("*This dashboard allows you to analyze various aspects of the FunOlympic Games.*")
+st.markdown("This dashboard allows you to analyze various aspects of the FunOlympic Games.")
 
 # Sidebar
 analysis_option = st.sidebar.radio("Select Analysis", ["Home", "Viewship by Location", "Engagement Trends", "Gender Analysis", "Preferences Analysis", "Viewer Engagement", "Concurrent Events"])
 
 # Handle different analysis options
 if analysis_option == "Home":
-    st.markdown("**Welcome to FunOlympic Games Analysis Dashboard**")
+    st.header("Welcome to FunOlympic Games Analysis Dashboard")
     st.markdown("""
     This dashboard provides insights into the FunOlympic Games, including viewer engagement trends, preferences, and geographical distribution of viewership. 
     Use the sidebar to navigate through different analysis options.
     """)
-    st.image("/path/to/your/image.jpg", use_column_width=True)
 
 elif analysis_option == "Viewship by Location":
-    st.title("Distribution of Viewship of Each Sporting Event by Geographic Location")
+    st.header("Distribution of Viewship of Each Sporting Event by Geographic Location")
     sport_viewed = st.selectbox("Select Sport Viewed", sporting_events)
     
     # Filter dataframe based on selected sport viewed
@@ -65,7 +64,7 @@ elif analysis_option == "Viewship by Location":
     st.plotly_chart(fig)
 
 elif analysis_option == "Engagement Trends":
-    st.title("Viewer Engagement Trends Over Time")
+    st.header("Viewer Engagement Trends Over Time")
     selected_month = st.selectbox("Select Month", months)
     selected_sport = st.selectbox("Select Sporting Event", sporting_events, index=0)
     
@@ -80,7 +79,7 @@ elif analysis_option == "Engagement Trends":
     st.plotly_chart(fig)
 
 elif analysis_option == "Gender Analysis":
-    st.title("Gender-specific Preferences and Behaviours")
+    st.header("Gender-specific Preferences and Behaviours")
     continent = st.selectbox("Select Continent", continents)
     gender = st.selectbox("Select Gender", genders)
     sport = st.selectbox("Select Sporting Event", sporting_events)
@@ -96,7 +95,7 @@ elif analysis_option == "Gender Analysis":
     st.plotly_chart(fig)
 
 elif analysis_option == "Preferences Analysis":
-    st.title("Viewer Preferences for Different Sports Events per country per continent")
+    st.header("Viewer Preferences for Different Sports Events per country per continent")
     continent = st.selectbox("Select Continent", continents)
     country = st.selectbox("Select Country", df[df['Continent'] == continent]['Country'].unique())
     
@@ -110,7 +109,7 @@ elif analysis_option == "Preferences Analysis":
     st.plotly_chart(fig)
 
 elif analysis_option == "Viewer Engagement":
-    st.title("Viewer Engagement Patterns")
+    st.header("Viewer Engagement Patterns")
     navigation_option = st.selectbox("Select Engagement Type", ['Request', 'Rating', 'Feedback'])
     
     # Group by selected engagement type and count occurrences
@@ -120,7 +119,7 @@ elif analysis_option == "Viewer Engagement":
     st.plotly_chart(fig)
 
 elif analysis_option == "Concurrent Events":
-    st.title("Distribution of Concurrent Sporting Events by Viewer Engagement")
+    st.header("Distribution of Concurrent Sporting Events by Viewer Engagement")
     selected_month = st.selectbox("Select Month", months)
     
     # Filter dataframe based on selected month
